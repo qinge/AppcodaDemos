@@ -7,13 +7,17 @@
 //
 //  http://www.appcoda.com.tw/foursquare-realm-swift/
 //  https://foursquare.com/developers/app/UUQMAAIXQ2DIT52PFABIQDPYKJW3FDTPAGSNBS3ZNE0XMKHN
+//  http://www.appcoda.com/foursquare-realm-swift/
+
 
 
 
 import UIKit
 import MapKit
 
-class ViewController: UIViewController, MKMapViewDelegate , CLLocationManagerDelegate{
+import RealmSwift
+
+class ViewController: UIViewController, MKMapViewDelegate , CLLocationManagerDelegate, UITableViewDataSource, UITableViewDelegate {
 
     @IBOutlet weak var mapView: MKMapView!
     @IBOutlet weak var tableView: UITableView!
@@ -21,11 +25,21 @@ class ViewController: UIViewController, MKMapViewDelegate , CLLocationManagerDel
     var locationManager: CLLocationManager?
     let distanceSpan:Double = 500
     
+    var lastLocation: CLLocation?
+    // 声明时候需要指定泛型参数类型
+    var venues: Results<Venue>?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         mapView.delegate = self
+        
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("onVenuesUpdated:"), name: API.notifications.venuesUpdated, object: nil)
+    }
+    
+    func onVenuesUpdated(notification:NSNotification)
+    {
+        refreshVenues(nil)
     }
 
     override func didReceiveMemoryWarning() {
@@ -52,9 +66,90 @@ class ViewController: UIViewController, MKMapViewDelegate , CLLocationManagerDel
     
     // MARK: - CLLocationManagerDelegate
     func locationManager(manager: CLLocationManager, didUpdateToLocation newLocation: CLLocation, fromLocation oldLocation: CLLocation) {
+
         let region = MKCoordinateRegionMakeWithDistance(newLocation.coordinate, distanceSpan, distanceSpan)
         mapView.setRegion(region, animated: true)
+        
+        refreshVenues(newLocation, getDataFromFoursquare: true)
     }
+    
+    
+    func refreshVenues(location: CLLocation?, getDataFromFoursquare: Bool = false){
+        if location != nil {
+            lastLocation = location
+        }
+        
+        if let location = lastLocation {
+            if getDataFromFoursquare == true {
+                CoffeeAPI.sharedInstance.getCoffeeShopsWithLocation(location)
+            }
+            
+            let realm = try! Realm()
+            venues = realm.objects(Venue)
+            
+            for venue in venues! {
+                let annotation = CoffeeAnnotation(title: venue.name, subtitle: venue.address, coordinate: CLLocationCoordinate2D(latitude: Double(venue.latitude), longitude: Double(venue.longitude)))
+                mapView.addAnnotation(annotation)
+            }
+        }
+    }
+    
+    
+    func mapView(mapView: MKMapView, viewForAnnotation annotation: MKAnnotation) -> MKAnnotationView? {
+        if annotation.isKindOfClass(MKUserLocation) {
+            return nil
+        }
+        
+        var view = mapView.dequeueReusableAnnotationViewWithIdentifier("annotationIdentifier")
+        if view == nil {
+            view = MKPinAnnotationView(annotation: annotation, reuseIdentifier: "annotationIdentifier")
+        }
+        // callout: 插图
+        view?.canShowCallout = true
+        return view
+    }
+    
+    
+    // MARK: - UITableViewDataSource
+    
+    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int
+    {
+        return venues?.count ?? 0
+    }
+    
+    func numberOfSectionsInTableView(tableView: UITableView) -> Int
+    {
+        return 1
+    }
+    
+    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell
+    {
+        var cell = tableView.dequeueReusableCellWithIdentifier("cellIdentifier");
+        
+        if cell == nil
+        {
+            cell = UITableViewCell(style: UITableViewCellStyle.Subtitle, reuseIdentifier: "cellIdentifier")
+        }
+        
+        if let venue = venues?[indexPath.row]
+        {
+            cell!.textLabel?.text = venue.name
+            cell!.detailTextLabel?.text = venue.address
+        }
+        
+        return cell!
+    }
+    
+    
+    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath)
+    {
+        if let venue = venues?[indexPath.row]
+        {
+            let region = MKCoordinateRegionMakeWithDistance(CLLocationCoordinate2D(latitude: Double(venue.latitude), longitude: Double(venue.longitude)), distanceSpan, distanceSpan)
+            mapView?.setRegion(region, animated: true)
+        }
+    }
+    
     
 }
 
