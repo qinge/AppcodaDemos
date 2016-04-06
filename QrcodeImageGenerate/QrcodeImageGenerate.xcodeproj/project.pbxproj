@@ -13,6 +13,8 @@
 		2518493C1CB35DE10084EB28 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2518493B1CB35DE10084EB28 /* Assets.xcassets */; };
 		2518493F1CB35DE10084EB28 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2518493D1CB35DE10084EB28 /* LaunchScreen.storyboard */; };
 		252352DB1CB36EE0004A7173 /* 6824500_006_thumb.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 252352DA1CB36EE0004A7173 /* 6824500_006_thumb.jpg */; };
+		2535C8AA1CB4BA9F00DBFA69 /* ScanViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2535C8A91CB4BA9F00DBFA69 /* ScanViewController.swift */; };
+		25E197C01CB4F1DD00141C58 /* ReadViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25E197BF1CB4F1DD00141C58 /* ReadViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -24,6 +26,8 @@
 		2518493E1CB35DE10084EB28 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		251849401CB35DE10084EB28 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		252352DA1CB36EE0004A7173 /* 6824500_006_thumb.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = 6824500_006_thumb.jpg; sourceTree = "<group>"; };
+		2535C8A91CB4BA9F00DBFA69 /* ScanViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScanViewController.swift; sourceTree = "<group>"; };
+		25E197BF1CB4F1DD00141C58 /* ReadViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReadViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -63,6 +67,8 @@
 				2518493B1CB35DE10084EB28 /* Assets.xcassets */,
 				2518493D1CB35DE10084EB28 /* LaunchScreen.storyboard */,
 				251849401CB35DE10084EB28 /* Info.plist */,
+				2535C8A91CB4BA9F00DBFA69 /* ScanViewController.swift */,
+				25E197BF1CB4F1DD00141C58 /* ReadViewController.swift */,
 			);
 			path = QrcodeImageGenerate;
 			sourceTree = "<group>";
@@ -141,6 +147,8 @@
 			files = (
 				251849371CB35DE10084EB28 /* ViewController.swift in Sources */,
 				251849351CB35DE10084EB28 /* AppDelegate.swift in Sources */,
+				25E197C01CB4F1DD00141C58 /* ReadViewController.swift in Sources */,
+				2535C8AA1CB4BA9F00DBFA69 /* ScanViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

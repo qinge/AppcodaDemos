@@ -5,6 +5,8 @@
 //  Created by snqu-ios on 16/4/5.
 //  Copyright © 2016年 snqu-ios. All rights reserved.
 //
+//  http://adad184.com/2015/09/30/goodbye-zxing/
+
 
 import UIKit
 
