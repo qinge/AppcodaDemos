@@ -27,7 +27,8 @@ class ViewController: UIViewController, MKMapViewDelegate , CLLocationManagerDel
     
     var lastLocation: CLLocation?
     // 声明时候需要指定泛型参数类型
-    var venues: Results<Venue>?
+//    var venues: Results<Venue>?
+    var venues: [Venue]?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -84,16 +85,44 @@ class ViewController: UIViewController, MKMapViewDelegate , CLLocationManagerDel
                 CoffeeAPI.sharedInstance.getCoffeeShopsWithLocation(location)
             }
             
+//            let realm = try! Realm()
+//            venues = realm.objects(Venue)
+            let (start, stop) = calculateCoordinatesWithRegion(location)
+            let predicate = NSPredicate(format: "latitude < %f AND latitude > %f AND longitude > %f AND longitude < %f", start.latitude, stop.latitude, start.longitude, stop.longitude)
             let realm = try! Realm()
-            venues = realm.objects(Venue)
+            venues = realm.objects(Venue).filter(predicate).sort({ (v0, v1) -> Bool in
+                return location.distanceFromLocation(v0.coordinate) < location.distanceFromLocation(v1.coordinate)
+            })
             
             for venue in venues! {
                 let annotation = CoffeeAnnotation(title: venue.name, subtitle: venue.address, coordinate: CLLocationCoordinate2D(latitude: Double(venue.latitude), longitude: Double(venue.longitude)))
                 mapView.addAnnotation(annotation)
             }
+            tableView.reloadData()
         }
     }
     
+    
+    /**
+     通過簡單的計算，基於 distanceSpan，將一個 CLLocation 對象轉換成一個左上角和右下角座標。
+     
+     - parameter location: location
+     
+     - returns: point
+     */
+    func calculateCoordinatesWithRegion(location: CLLocation) -> (CLLocationCoordinate2D, CLLocationCoordinate2D) {
+        let region = MKCoordinateRegionMakeWithDistance(location.coordinate, distanceSpan, distanceSpan)
+        
+        var start: CLLocationCoordinate2D = CLLocationCoordinate2D()
+        var stop: CLLocationCoordinate2D = CLLocationCoordinate2D()
+        
+        start.latitude  = region.center.latitude  + (region.span.latitudeDelta  / 2.0)
+        start.longitude = region.center.longitude - (region.span.longitudeDelta / 2.0)
+        stop.latitude   = region.center.latitude  - (region.span.latitudeDelta  / 2.0)
+        stop.longitude  = region.center.longitude + (region.span.longitudeDelta / 2.0)
+        
+        return (start, stop)
+    }
     
     func mapView(mapView: MKMapView, viewForAnnotation annotation: MKAnnotation) -> MKAnnotationView? {
         if annotation.isKindOfClass(MKUserLocation) {
