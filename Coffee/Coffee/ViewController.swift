@@ -49,6 +49,7 @@ class ViewController: UIViewController, MKMapViewDelegate , CLLocationManagerDel
     }
     
     override func viewDidAppear(animated: Bool) {
+        super.viewDidAppear(animated)
         if locationManager == nil {
             locationManager = CLLocationManager()
             locationManager?.delegate = self
